@@ -1,7 +1,7 @@
 # Gametheory IIT2021210
 
 ## Project Description
-This project is a **booking app** for a sports technology company's operations team. The app allows users to book courts, view available slots, and manage sports-related bookings. It also allows admins or managers to modify predefined slots.
+This project is a **court booking app** designed for a sports technology company's operations team. The app allows users to book courts, view available slots, and manage sports-related bookings. Admins or managers can also add, edit, or modify predefined time slots for each court. It is built using Node.js, Express.js for the backend, and MongoDB as the database for managing court, slot, and booking information.
 
 ## College ID
 **IIT2021210**
@@ -18,60 +18,83 @@ This project is a **booking app** for a sports technology company's operations t
 ## Setup Instructions
 
 1. **Clone the repository**:
+   First, clone the project repository to your local machine by running:
    ```bash
    git clone https://github.com/SKU08/Gametheory.git
    cd Gametheory
    ```
 
 2. **Install the required dependencies**:
-   Make sure you have Node.js installed. Then, run:
+   Make sure you have Node.js installed on your machine. Install the project dependencies by running:
    ```bash
    npm install
    ```
 
 3. **Set up the database**:
-   * Install MongoDB and start the MongoDB server
-   * Update your `.env` file (or create one) with the following details:
-     ```env
+   * Install and start MongoDB on your local machine
+   * Update or create the `.env` file in the project's root directory with the following details:
+     ```bash
      DB_URI=mongodb://localhost:27017/booking-app
      PORT=5000
      ```
-   * If there are any scripts to set up collections or initialize data, follow the specific instructions
+   * Initialize data (if required): If there are any database initialization scripts to set up collections or insert initial data (like predefined slots or sports), execute those scripts after setting up the MongoDB server
 
 ## Run the Project
 
 1. **Start the backend server**:
-   To run the Node.js server locally, use the following command:
+   To run the Node.js server locally, execute:
    ```bash
    npm start
    ```
-   The server will run on `http://localhost:5000`
+   This will start the server on `http://localhost:5000`.
 
 2. **Access the application**:
-   Once the server is running, navigate to `http://localhost:5000` in your browser to access the application
+   Once the server is running, you can access the application by navigating to `http://localhost:5000` in your browser.
 
 ## Deploy the Project
 
-1. Ensure the environment variables (like `DB_URI`) are correctly set up on the production server
-2. Deploy the project using any preferred platform (e.g., **Heroku**, **AWS**, **DigitalOcean**)
-3. For Heroku:
-   * Push the code to a new Heroku app by running:
-     ```bash
-     heroku create
-     git push heroku main
+### Deploy on Render
+
+1. **Create a Render account**:
+   * Go to Render and create an account if you don't have one
+
+2. **Create a new Web Service**:
+   * In your Render dashboard, click on New > Web Service
+
+3. **Connect to the repository**:
+   * Select the repository (e.g., Gametheory) from GitHub when prompted
+
+4. **Configure the environment**:
+   * In the Environment tab, add your environment variables:
+     ```makefile
+     DB_URI=mongodb+srv://<your-production-mongo-uri>
+     PORT=5000
      ```
-   * Make sure the MongoDB URI is set in the Heroku app's config variables
+
+5. **Choose a branch to deploy**:
+   * Select the branch (e.g., main) you want to deploy
+
+6. **Deploy**:
+   * After setting up the service and environment, Render will automatically deploy your app
+   * You can view your application at the URL provided by Render
+
+7. **Post-deployment**:
+   * Ensure that MongoDB is running in the cloud (for example, using MongoDB Atlas)
+   * Set the DB_URI with the appropriate MongoDB connection string
+
+### Troubleshooting
+If you encounter any issues during deployment, check Render's deployment logs for errors and adjust configurations as needed.
 
 ## Prerequisites
 
-Before running this project, ensure you have:
-* **Node.js** (v14+)
-* **npm** (v6+)
-* **MongoDB** (v4.0+)
+Before running or deploying the project, ensure the following prerequisites are met:
+* Node.js (v14+)
+* npm (v6+)
+* MongoDB (v4.0+)
 
 ## Dependencies
 
-Here are the major dependencies for the project:
+The project relies on several key dependencies. You can find these in package.json:
 ```json
 {
   "express": "^4.17.1",
@@ -80,20 +103,23 @@ Here are the major dependencies for the project:
   "dotenv": "^8.2.0"
 }
 ```
-Install all dependencies by running `npm install` from the root folder of the project.
+Install all dependencies by running:
+```bash
+npm install
+```
 
 ## Assumptions and Limitations
 
 ### Assumptions:
-* The admin/manager is responsible for adding and modifying the available slots for bookings
-* Only registered users are allowed to make bookings
+* The admin or manager is responsible for managing court slots, including adding, modifying, and removing slots for bookings
+* Only registered users can book courts, ensuring a controlled booking environment
 
 ### Limitations:
-* The current version does not include user authentication. User login/logout mechanisms need to be added in future iterations
-* This app only supports bookings for one sport at a time
+* The app does not include user authentication in its current state, meaning users are not required to log in before making bookings
+* The app only supports bookings for a single sport at a time
 
 ## Special Instructions
 
-* **Environment Variables**: Ensure the `.env` file is properly set with the MongoDB URI (`DB_URI`) and server port (`PORT`)
-* **MongoDB Setup**: Ensure MongoDB is installed and running locally for development
-* **Running Tests**: There are no automated tests available in the current version. Testing should be done manually
+* **Environment Variables**: Ensure that the `.env` file is properly set up with the MongoDB URI (`DB_URI`) and the server port (`PORT`)
+* **MongoDB Setup**: Make sure MongoDB is installed and running locally for development purposes or use MongoDB Atlas for production
+* **Testing**: The project does not include automated tests, so testing must be performed manually for now
