@@ -12,11 +12,6 @@ const parseDate = (dateString) => {
   return new Date(`${year}-${month}-${day}`);  // Convert to YYYY-MM-DD format
 };
 
-// const { verifyToken, isManager } = require('../middleware/authMiddleware');
-// const router = express.Router();
-
-// Manager view all bookings for a specific sport
-// Manager view all bookings for a specific sport
 router.get('/bookings/sport/:sport_id', verifyToken, isManager, async (req, res) => {
   let { sport_id } = req.params;
 
@@ -112,8 +107,78 @@ router.put('/court/:courtId/slots', verifyToken, isManager, async (req, res) => 
 
     res.status(200).json({ message: 'Slots updated successfully', court });
   } catch (error) {
+    console.error('Error updating slots:', error); // Log the actual error
     res.status(500).json({ error: 'Failed to update slots' });
   }
 });
+
+// Get all centers
+router.get('/centers', verifyToken, async (req, res) => {
+  try {
+    const centers = await Center.find();
+    res.status(200).json({ centers });
+  } catch (error) {
+    console.error('Error retrieving centers:', error);
+    res.status(500).json({ error: 'Failed to retrieve centers' });
+  }
+});
+
+// Get all sports for a specific center
+// Assuming you're using a router
+router.get('/centers/:centerId/sports', verifyToken, async (req, res) => {
+  const { centerId } = req.params;
+  console.log('Received centerId:', centerId); // Log the centerId
+
+  try {
+    const sports = await Sport.find({ center_id: centerId });
+
+    if (sports.length === 0) {
+      return res.status(404).json({ message: 'No sports found for this center' });
+    }
+
+    res.status(200).json({ sports });
+  } catch (error) {
+    console.error('Error retrieving sports:', error);
+    res.status(500).json({ error: 'Failed to retrieve sports' });
+  }
+});
+
+
+// Get all courts for a specific sport
+router.get('/sports/:sportId/courts', verifyToken, async (req, res) => {
+  const { sportId } = req.params;
+
+  try {
+    const courts = await Court.find({ sport_id: sportId });
+
+    if (courts.length === 0) {
+      return res.status(404).json({ message: 'No courts found for this sport' });
+    }
+
+    // Fetch the available slots for each court
+    const courtDetails = await Promise.all(
+      courts.map(async (court) => {
+        const bookings = await Booking.find({ court_id: court._id });
+        const bookedSlots = bookings.map(booking => booking.slot); // Extract booked slots
+
+        return {
+          id: court._id,
+          name: court.name,
+          slots: court.slots.map(slot => ({
+            slot,
+            available: !bookedSlots.includes(slot) // Check if slot is available
+          }))
+        };
+      })
+    );
+
+    res.status(200).json({ courts: courtDetails });
+  } catch (error) {
+    console.error('Error retrieving courts:', error);
+    res.status(500).json({ error: 'Failed to retrieve courts' });
+  }
+});
+
+
 
 module.exports = router;

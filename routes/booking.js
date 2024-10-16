@@ -62,4 +62,15 @@ router.post('/book', verifyToken, async (req, res) => {
   }
 });
 
+// User booking route
+router.get('/bookings', verifyToken, async (req, res) => {
+  try {
+    const bookings = await Booking.find({ user_id: req.user._id }).populate('court_id'); // Assuming court_id is a reference
+    res.status(200).json({ bookings });
+  } catch (error) {
+    console.error('Error fetching bookings:', error);
+    res.status(500).json({ error: 'Failed to fetch bookings', details: error.message });
+  }
+});
+
 module.exports = router;
