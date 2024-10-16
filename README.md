@@ -1,5 +1,9 @@
 # Gametheory IIT2021210
 
+### Deployed Link
+https://dazzling-cassata-293316.netlify.app/
+
+
 ## Project Description
 This project is a **court booking app** designed for a sports technology company's operations team. The app allows users to book courts, view available slots, and manage sports-related bookings. Admins or managers can also add, edit, or modify predefined time slots for each court. It is built using Node.js, Express.js for the backend, and MongoDB as the database for managing court, slot, and booking information.
 
