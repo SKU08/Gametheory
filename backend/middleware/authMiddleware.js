@@ -1,7 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-// Middleware to verify token and check if user is a manager
 const verifyToken = (req, res, next) => {
   const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
 
@@ -14,7 +13,6 @@ const verifyToken = (req, res, next) => {
       return res.status(401).json({ message: 'Unauthorized!' });
     }
 
-    // Attach user info to request
     req.user = await User.findById(decoded.id);
 
     if (!req.user) {
@@ -25,7 +23,6 @@ const verifyToken = (req, res, next) => {
   });
 };
 
-// Middleware to ensure only managers can access the route
 const isManager = (req, res, next) => {
   if (req.user.role !== 'manager') {
     return res.status(403).json({ message: 'Only managers can perform this action' });

@@ -51,7 +51,7 @@ router.get('/bookings/sport/:sport_id', verifyToken, isManager, async (req, res)
 
 
 // Create a new center (only managers can do this)
-router.post('/center', verifyToken, isManager, async (req, res) => {
+router.post('/center', verifyToken, async (req, res) => {
   const { name, location } = req.body;
 
   const center = new Center({ name, location });
@@ -113,21 +113,32 @@ router.put('/court/:courtId/slots', verifyToken, isManager, async (req, res) => 
 });
 
 // Get all centers
-router.get('/centers', verifyToken, async (req, res) => {
-  try {
-    const centers = await Center.find();
-    res.status(200).json({ centers });
-  } catch (error) {
-    console.error('Error retrieving centers:', error);
-    res.status(500).json({ error: 'Failed to retrieve centers' });
-  }
+// router.get('/centers', verifyToken, async (req, res) => {
+//   try {
+//       const centers = await Center.find();
+//       res.status(200).json({ centers });
+//   } catch (error) {
+//       console.error('Error retrieving centers:', error);
+//       res.status(500).json({ error: 'Failed to retrieve centers' });
+//   }
+// });
+// Temporarily comment out verifyToken
+// router.get('/centers', verifyToken, isManager, async (req, res) => {
+  router.get('/centers',verifyToken, async (req, res) => {
+    try {
+        const centers = await Center.find();
+        res.status(200).json({ centers });
+    } catch (error) {
+        console.error('Error retrieving centers:', error);
+        res.status(500).json({ error: 'Failed to retrieve centers' });
+    }
 });
+
 
 // Get all sports for a specific center
 // Assuming you're using a router
-router.get('/centers/:centerId/sports', verifyToken, async (req, res) => {
+router.get('/centers/:centerId/sports', verifyToken,  async (req, res) => {
   const { centerId } = req.params;
-  console.log('Received centerId:', centerId); // Log the centerId
 
   try {
     const sports = await Sport.find({ center_id: centerId });
@@ -145,7 +156,7 @@ router.get('/centers/:centerId/sports', verifyToken, async (req, res) => {
 
 
 // Get all courts for a specific sport
-router.get('/sports/:sportId/courts', verifyToken, async (req, res) => {
+router.get('/sports/:sportId/courts', verifyToken,  async (req, res) => {
   const { sportId } = req.params;
 
   try {
@@ -178,7 +189,5 @@ router.get('/sports/:sportId/courts', verifyToken, async (req, res) => {
     res.status(500).json({ error: 'Failed to retrieve courts' });
   }
 });
-
-
 
 module.exports = router;

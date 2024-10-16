@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { login } from "../utils/authSlice"; // Import the login action
+import { setLoginData } from "../utils/authSlice"; // Import the login action
 
 const Signup = () => {
   const [name, setName] = useState("");
@@ -39,7 +39,7 @@ const Signup = () => {
         const { token, user } = data;
 
         // Dispatch login action with the user credentials (to store in Redux and localStorage)
-        dispatch(login({ token, ...user }));
+        dispatch(setLoginData({ token, ...user }));
 
         // Redirect to user dashboard based on role
         setTimeout(() => {

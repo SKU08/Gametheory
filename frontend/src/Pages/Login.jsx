@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux"; // Import useDispatch to dispatch Redux actions
-import { login } from "../utils/authSlice"; // Import login action
+import { setLoginData} from "../utils/authSlice"; // Import login action
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -36,7 +36,7 @@ const Login = () => {
 
         // Dispatch user login data (token, name, email, role) to Redux store
         dispatch(
-          login({
+          setLoginData({
             token: data.token,
             name: data.user.name,
             email: data.user.email,
@@ -46,7 +46,7 @@ const Login = () => {
 
         // Redirect based on user's role after a short delay
         setTimeout(() => {
-          navigate(data.user.role === "admin" ? "/admin-dashboard" : "/user-dashboard");
+          navigate(data.user.role === "manager" ? "/admin-dashboard" : "/user-dashboard");
         }, 1500); // 1.5-second delay before redirecting
       } else {
         // Handle error response from the server

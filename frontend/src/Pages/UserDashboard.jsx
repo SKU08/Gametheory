@@ -1,16 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const UserDashboard = () => {
+  const navigate = useNavigate();
   const user = useSelector((state) => state.auth);
   const [centers, setCenters] = useState([]);
   const [sports, setSports] = useState([]);
   const [courts, setCourts] = useState([]);
+  const [bookedSlots, setBookedSlots] = useState({}); // Track booked slots
   const [selectedCenter, setSelectedCenter] = useState("");
   const [selectedSport, setSelectedSport] = useState("");
   const [date, setDate] = useState("");
 
-  // Fetch all centers on component mount
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
+
   useEffect(() => {
     const fetchCenters = async () => {
       try {
@@ -25,8 +32,6 @@ const UserDashboard = () => {
         if (response.ok) {
           const data = await response.json();
           setCenters(data.centers);
-        } else {
-          console.error("Failed to fetch centers:", response.status);
         }
       } catch (error) {
         console.error("Error fetching centers:", error);
@@ -36,7 +41,6 @@ const UserDashboard = () => {
     fetchCenters();
   }, []);
 
-  // Fetch sports for the selected center
   useEffect(() => {
     const fetchSports = async () => {
       if (selectedCenter) {
@@ -52,10 +56,9 @@ const UserDashboard = () => {
           if (response.ok) {
             const data = await response.json();
             setSports(data.sports);
-            setSelectedSport(""); // Reset sport selection
-            setCourts([]); // Reset courts on center change
-          } else {
-            console.error("Failed to fetch sports:", response.status);
+            setSelectedSport("");
+            setCourts([]);
+            setBookedSlots({}); // Reset booked slots when center changes
           }
         } catch (error) {
           console.error("Error fetching sports:", error);
@@ -66,12 +69,11 @@ const UserDashboard = () => {
     fetchSports();
   }, [selectedCenter]);
 
-  // Fetch courts for the selected sport
   useEffect(() => {
     const fetchCourts = async () => {
-      if (selectedSport) {
+      if (selectedSport && date) {
         try {
-          const response = await fetch(`http://localhost:5000/api/manager/sports/${selectedSport}/courts`, {
+          const response = await fetch(`http://localhost:5000/api/manager/sports/${selectedSport}/courts?date=${date}`, {
             method: "GET",
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -82,8 +84,6 @@ const UserDashboard = () => {
           if (response.ok) {
             const data = await response.json();
             setCourts(data.courts);
-          } else {
-            console.error("Failed to fetch courts:", response.status);
           }
         } catch (error) {
           console.error("Error fetching courts:", error);
@@ -92,23 +92,71 @@ const UserDashboard = () => {
     };
 
     fetchCourts();
-  }, [selectedSport]);
+  }, [selectedSport, date]);
 
-  // Handle date change
   const handleDateChange = (e) => {
     setDate(e.target.value);
+    // Reset booked slots when date changes
+    setBookedSlots({});
   };
 
-  // Handle booking
-  const handleBooking = (courtId, slot, date) => {
-    console.log(`Booking court ${courtId} for slot ${slot} on date ${date}`);
+  const formatDateToDDMMYYYY = (dateString) => {
+    const dateObj = new Date(dateString);
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const year = dateObj.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
+  const handleBooking = async (courtId, slot, date) => {
+    try {
+      const token = localStorage.getItem("token");
+      const formattedDate = formatDateToDDMMYYYY(date);
+
+      const response = await fetch("http://localhost:5000/api/bookings/book", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          court_id: courtId,
+          slot: slot,
+          date: formattedDate,
+        }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        alert("Booking successful!");
+
+        // Update booked slots state for the specific date
+        setBookedSlots((prev) => ({
+          ...prev,
+          [`${date}-${courtId}-${slot}`]: true, // Mark this slot as booked for the specific date
+        }));
+      } else {
+        const error = await response.json();
+        alert(`Booking failed: ${error.message}`);
+      }
+    } catch (error) {
+      console.error("Error during booking:", error);
+      alert("An error occurred during booking. Please try again later.");
+    }
   };
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Welcome, {user.name || "Guest"}!</h1>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Welcome, {user.name || "Guest"}!</h1>
+        <button
+          onClick={handleLogout}
+          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700 transition duration-300"
+        >
+          Logout
+        </button>
+      </div>
 
-      {/* Dropdowns for selecting center, sport, and date */}
       <div className="flex space-x-4 mb-4">
         <div>
           <label className="block mb-2">Select Center:</label>
@@ -176,15 +224,15 @@ const UserDashboard = () => {
                   <td className="border-b p-2 text-center">{slot.slot}</td>
                   {courts.map((court) => (
                     <td key={court.id} className="border-b p-2 text-center">
-                      {slot.available ? (
+                      {bookedSlots[`${date}-${court.id}-${slot.slot}`] ? (
+                        <span className="text-red-500">Booked</span>
+                      ) : (
                         <button
                           className="bg-blue-500 text-white p-2 rounded hover:bg-blue-700 transition duration-300"
                           onClick={() => handleBooking(court.id, slot.slot, date)}
                         >
                           Book
                         </button>
-                      ) : (
-                        <span className="text-red-500">Booked</span>
                       )}
                     </td>
                   ))}

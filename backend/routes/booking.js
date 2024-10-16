@@ -42,7 +42,9 @@ router.post('/book', verifyToken, async (req, res) => {
 
     // Check if the slot is already booked on the given date
     const existingBooking = await Booking.findOne({ court_id, slot, date: parsedDate });
-    if (existingBooking) {
+    console.log(existingBooking?.date!=parsedDate);
+    
+    if (existingBooking&&existingBooking?.date!==parsedDate) {
       return res.status(400).json({ message: 'This slot is already booked for the given date' });
     }
 
