@@ -44,7 +44,7 @@ function AdminDashboard() {
 
   useEffect(() => {
     const fetchCenters = async () => {
-      const result = await makeRequest("http://localhost:5000/api/manager/centers");
+      const result = await makeRequest("https://gametheory-36n9.onrender.com/api/manager/centers");
       setCenters(result.centers || []);
     };
 
@@ -54,7 +54,7 @@ function AdminDashboard() {
   useEffect(() => {
     const fetchSports = async () => {
       if (!selectedCenter) return;
-      const result = await makeRequest(`http://localhost:5000/api/manager/centers/${selectedCenter}/sports`);
+      const result = await makeRequest(`https://gametheory-36n9.onrender.com/api/manager/centers/${selectedCenter}/sports`);
       setSports(result.sports || []);
     };
 
@@ -64,7 +64,7 @@ function AdminDashboard() {
   useEffect(() => {
     const fetchCourts = async () => {
       if (!selectedSport) return;
-      const result = await makeRequest(`http://localhost:5000/api/manager/sports/${selectedSport}/courts`);
+      const result = await makeRequest(`https://gametheory-36n9.onrender.com/api/manager/sports/${selectedSport}/courts`);
       setCourts(result.courts || []);
     };
 
@@ -84,7 +84,7 @@ function AdminDashboard() {
         return;
       }
       const slotArray = slots.split(",").map((slot) => slot.trim());
-      const result = await makeRequest(`http://localhost:5000/api/manager/court/${selectedCourt}/slots`, "POST", { slots: slotArray });
+      const result = await makeRequest(`https://gametheory-36n9.onrender.com/api/manager/court/${selectedCourt}/slots`, "POST", { slots: slotArray });
       alert(result.message);
     }
   };
@@ -121,7 +121,7 @@ function AdminDashboard() {
             e.preventDefault();
             const centerName = e.target.centerName.value;
             const location = e.target.location.value;
-            const result = await makeRequest("http://localhost:5000/api/manager/center", "POST", { name: centerName, location });
+            const result = await makeRequest("https://gametheory-36n9.onrender.com/api/manager/center", "POST", { name: centerName, location });
             alert(result.message);
             setCenters((prev) => [...prev, result.center]);
             e.target.reset();
@@ -138,7 +138,7 @@ function AdminDashboard() {
           <form onSubmit={async (e) => {
             e.preventDefault();
             const sportName = e.target.sportName.value;
-            const result = await makeRequest("http://localhost:5000/api/manager/sport", "POST", { name: sportName, center_id: selectedCenter });
+            const result = await makeRequest("https://gametheory-36n9.onrender.com/api/manager/sport", "POST", { name: sportName, center_id: selectedCenter });
             alert(result.message);
             setSports((prev) => [...prev, result.sport]);
             e.target.reset();
@@ -163,7 +163,7 @@ function AdminDashboard() {
             const slotInput = e.target.slotInput.value;
             const slotArray = slotInput.split(",").map(slot => slot.trim());
 
-            const result = await makeRequest("http://localhost:5000/api/manager/court", "POST", {
+            const result = await makeRequest("https://gametheory-36n9.onrender.com/api/manager/court", "POST", {
               name: courtName,
               sport_id: selectedSport,
               slots: slotArray

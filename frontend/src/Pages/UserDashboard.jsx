@@ -21,7 +21,7 @@ const UserDashboard = () => {
   useEffect(() => {
     const fetchCenters = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/manager/centers", {
+        const response = await fetch("https://gametheory-36n9.onrender.com/api/manager/centers", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -45,7 +45,7 @@ const UserDashboard = () => {
     const fetchSports = async () => {
       if (selectedCenter) {
         try {
-          const response = await fetch(`http://localhost:5000/api/manager/centers/${selectedCenter}/sports`, {
+          const response = await fetch(`https://gametheory-36n9.onrender.com/api/manager/centers/${selectedCenter}/sports`, {
             method: "GET",
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -73,7 +73,7 @@ const UserDashboard = () => {
     const fetchCourts = async () => {
       if (selectedSport && date) {
         try {
-          const response = await fetch(`http://localhost:5000/api/manager/sports/${selectedSport}/courts?date=${date}`, {
+          const response = await fetch(`https://gametheory-36n9.onrender.com/api/manager/sports/${selectedSport}/courts?date=${date}`, {
             method: "GET",
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -113,7 +113,7 @@ const UserDashboard = () => {
       const token = localStorage.getItem("token");
       const formattedDate = formatDateToDDMMYYYY(date);
 
-      const response = await fetch("http://localhost:5000/api/bookings/book", {
+      const response = await fetch("https://gametheory-36n9.onrender.com/api/bookings/book", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
